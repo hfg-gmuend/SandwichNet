@@ -672,4 +672,9 @@ class SimpleNeuralNet
     );
   }
 
+  changeNetSize(w,h)
+  {
+    this.netWidth = w;
+    this.netHeight = h;
+  }
 }

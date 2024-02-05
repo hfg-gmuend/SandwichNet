@@ -146,6 +146,7 @@
       };
   
       // pass through ...
+      this.toggleCollapsed = function() { qs.toggleCollapsed(); };
       this.show = function() { qs.show(); };
       this.hide = function() { qs.hide(); };
       this.toggleVisibility = function() { qs.toggleVisibility(); };

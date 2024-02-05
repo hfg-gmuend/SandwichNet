@@ -72,7 +72,8 @@ function setup()
   frameRate(60);
   var gui = createGui('Neural Network Config');
   gui.addGlobals('inputNodes', 'hiddenNodes', 'outputNodes', 'learningRate');
-
+  gui.toggleCollapsed();
+  
   oldInputNodes = inputNodes;
   oldHiddenNodes = hiddenNodes;
   oldOutputNodes = outputNodes;
@@ -120,7 +121,7 @@ if(oldInputNodes != inputNodes || oldHiddenNodes != hiddenNodes || oldOutputNode
 }
 
   offsetTrainButton = netW/2;
-  background(255);
+  background(230,255,255);
   sandwichNet.update();
   sandwichNet.changeWeightsOnClick();
   push();
@@ -203,6 +204,7 @@ if(oldInputNodes != inputNodes || oldHiddenNodes != hiddenNodes || oldOutputNode
   {
     aktivateButton = true
   }
+  
   if(aktivateButton == true)
   {
     //TrainButton activated
@@ -231,6 +233,7 @@ if(oldInputNodes != inputNodes || oldHiddenNodes != hiddenNodes || oldOutputNode
     textSize(16);
     text("Change Output Value to Train ...",w/2+offsetTrainButton+40,h-50);
   }
+  
   fill(0);
 
   rectMode(CORNER);
@@ -291,4 +294,14 @@ function mouseClicked() {
       sandwich.shift();
     }
   
+}
+
+function windowResized() 
+{
+  w = windowWidth;
+  h = windowHeight;
+  netW = windowWidth * 0.7;
+  netH = windowHeight * 0.8;
+  resizeCanvas(w, h);
+  sandwichNet.changeNetSize(netW,netH);
 }

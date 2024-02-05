@@ -30,15 +30,20 @@ class Sandwich
     
     let w = textWidth(this.ingrediensText);
     let offsetY = 80;
-    rectMode(CENTER);
-    fill(255,255,255);
-    rect(-15,-offsetY-5,w+15,20,4);
     
     push();
       translate(-50,-offsetY);
       scale(0.25);
-      image(ingredientsArrow,0,0);
+      image(ingredientsArrow,0,-10);
     pop();
+
+    rectMode(CENTER);
+    stroke(0);
+    strokeWeight(3);
+    fill(255,255,255);
+    rect(-15,-offsetY-5,w+40,20+10,4);
+    //rect(-15,-offsetY-5,w*1.4+20,20+10,4);
+    
     
     rectMode(CORNER);
     fill(0);
@@ -75,4 +80,5 @@ class Sandwich
       this.velocity.add(this.gravity);
     }
   }
+  
 }
