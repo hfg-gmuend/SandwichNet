@@ -29,7 +29,7 @@ var learningRateMax = 20;
 var learningRateStep = 0.1;
 
 let level = 2;
-
+let bg = 0;
 let oldInputNodes;
 let oldHiddenNodes;
 let oldOutputNodes;
@@ -52,6 +52,8 @@ function preload() {
     const urlParams = new URLSearchParams(queryString);
     level = urlParams.get('level')
     print("jump to Level " + level);
+    bg = urlParams.get('bg')
+    print("set bg to " + bg);
   }
   else
   {
@@ -104,7 +106,13 @@ function setup()
 
   sandwichNet = new SimpleNeuralNet(inputNodes, hiddenNodes, outputNodes, netW, netH);
   sandwichNet.forward(v);
-  background(230,255,255);
+  if(bg == 1)
+  {
+    background(255);
+  }
+  else{
+    background(230,255,255);
+  }
   sandwichNet.update(netW,netH);
 
   //errorGraph = new ErrorGraph(w,50);
@@ -145,7 +153,13 @@ if(oldInputNodes != inputNodes || oldHiddenNodes != hiddenNodes || oldOutputNode
 }
 
   offsetTrainButton = netW/2;
-  background(230,255,255);
+  if(bg == 1)
+  {
+    background(255);
+  }
+  else{
+    background(230,255,255);
+  }
   sandwichNet.update();
   sandwichNet.changeWeightsOnClick();
   push();
