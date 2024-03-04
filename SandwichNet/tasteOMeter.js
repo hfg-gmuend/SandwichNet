@@ -32,31 +32,41 @@ class TasteOMeter
   render(position)
   {
     this.pos = position;
-    let buttonPlusPosition = createVector();
-    buttonPlusPosition.add(this.pos);
-    buttonPlusPosition.add(-73,-96);
+    if(level == 3){
+      let buttonPlusPosition = createVector();
+      buttonPlusPosition.add(this.pos);
+      buttonPlusPosition.add(-73,-96);
     
-    let buttonMinusPosition = createVector();
-    buttonMinusPosition.add(this.pos);
-    buttonMinusPosition.add(-67,69);
-    if(this.buttonPlus.isPressed(buttonPlusPosition) == true)
-    {
-      this.manualOutputValue = true;
-      this.value += 0.02;
-      if(this.value >= 1){this.value = 1}
-      
+      let buttonMinusPosition = createVector();
+      buttonMinusPosition.add(this.pos);
+      buttonMinusPosition.add(-67,69);
+      if(this.buttonPlus.isPressed(buttonPlusPosition) == true)
+      {
+        this.manualOutputValue = true;
+        this.value += 0.02;
+        if(this.value >= 1){this.value = 1}
+        
+      }
+      if(this.buttonMinus.isPressed(buttonMinusPosition) == true)
+      {
+        this.manualOutputValue = true;
+        this.value -= 0.02;
+        if(this.value <= 0){this.value = 0}
+        
+      }
     }
-    if(this.buttonMinus.isPressed(buttonMinusPosition) == true)
-    {
-      this.manualOutputValue = true;
-      this.value -= 0.02;
-      if(this.value <= 0){this.value = 0}
-      
-    }
+    
   push();
     translate(this.pos.x, this.pos.y); // 16
     scale(0.4);
-    image(tasteOMeter,-275,-275);
+    if(level == 3){
+      image(tasteOMeter_3,-275,-275);
+    }
+    else
+    {
+      image(tasteOMeter_2,-275,-275);
+    }
+    
     
         fill(255,0,0,50);
         noStroke();

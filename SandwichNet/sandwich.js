@@ -26,31 +26,33 @@ class Sandwich
   renderIngrediens()
   {
     push();
-    translate(this.position.x, this.position.y);
-    
-    let w = textWidth(this.ingrediensText);
-    let offsetY = 80;
-    
-    push();
-      translate(-50,-offsetY);
-      scale(0.25);
-      image(ingredientsArrow,0,-10);
-    pop();
+      translate(this.position.x, this.position.y);
+      
+      //let txtWidth = textWidth(this.ingrediensText);
+      let txtWidth = this.ingrediensText.length*9;
+      //print(w);
+      //print(this.ingrediensText.length)
+      let offsetY = 80;
+      
+      push();
+        translate(-50,-offsetY);
+        scale(0.25);
+        image(ingredientsArrow,0,-10);
+      pop();
 
-    rectMode(CENTER);
-    stroke(0);
-    strokeWeight(3);
-    fill(255,255,255);
-    rect(-15,-offsetY-5,w+40,20+10,4);
-    //rect(-15,-offsetY-5,w*1.4+20,20+10,4);
-    
-    
-    rectMode(CORNER);
-    fill(0);
-    noStroke();
-    textSize(16);
-    textStyle(BOLD);
-    text(this.ingrediensText,-15,-offsetY);
+      rectMode(CENTER);
+      textAlign(CENTER);
+      stroke(0);
+      strokeWeight(3);
+      fill(255,255,255);
+      rect(-15,-offsetY-5,txtWidth+40,20+10,4);
+      //rect(-15,-offsetY-5,txtWidth*1.4+20,20+10,4);
+      
+      fill(0);
+      noStroke();
+      textSize(16);
+      textStyle(BOLD);
+      text(this.ingrediensText,-15,-offsetY);
     pop();
   }
   render()

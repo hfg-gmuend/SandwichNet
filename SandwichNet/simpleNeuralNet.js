@@ -14,6 +14,7 @@ class SimpleNeuralNet
 
     this.weightsInputHidden = create_2d_array(_inputnodes, _hiddennodes);
     this.weightsHiddenOutput = create_2d_array(_hiddennodes,_outputnodes);
+    this.weightsInputOutput = create_2d_array(_inputnodes,_outputnodes);
     
     this.weightsInputHiddenIsClicked = create_2d_boolArray(_inputnodes, _hiddennodes);
     
@@ -31,6 +32,7 @@ class SimpleNeuralNet
     
     this.weightsInputHiddenPosition = create_2d_vectorArray(_inputnodes,_hiddennodes);
     this.weightsHiddenOutputPosition = create_2d_vectorArray(_hiddennodes,_outputnodes);
+    this.weightsInputOutputPosition = create_2d_vectorArray(_inputnodes,_outputnodes);
     
     this.neuronRenderSize = 60;
     this.netWidth = _netWidth;
@@ -81,11 +83,21 @@ class SimpleNeuralNet
           }
         }
         break;
+      case 'InputOutput':
+        for(let i = 0; i < this.inputnodes.length; i++)  
+        {
+          for(let o = 0; o < this.outputnodes.length; o++)
+          { 
+            f(i,o);
+          }
+        }
+        break;
     }
   }
 
   forward(inputValues)
   {
+    let sandwichNet = this;
     function sigmoid(x)
     {
       return 1/(1+(Math.exp(-x)));
@@ -99,32 +111,41 @@ class SimpleNeuralNet
       for(let h = 0; h < this.hiddennodes.length; h++){this.hiddenSigmoid[h] = 0}
       for(let o = 0; o < this.outputnodes.length; o++){this.outputSigmoid[o] = 0}
       this.inputnodes = inputValues;
-      //calc hidden neurons
-      for(let i = 0; i < this.inputnodes.length; i++)
+
+      if(this.hiddennodes.length == 0)
       {
-        for(let h = 0; h < this.hiddennodes.length; h++)
+        this.loopThrough("InputOutput", function(i,o)
         {
-          this.hiddennodes[h] += this.weightsInputHidden[i][h] * inputValues[i];
-        }
+          sandwichNet.outputnodes[o] += sandwichNet.weightsInputOutput[i][o] * inputValues[i];
+        });
+        this.loopThrough("Output", function(o)
+        {
+          sandwichNet.outputSigmoid[o] = sigmoid(sandwichNet.outputnodes[o]);
+        });
       }
-      //calc HiddenSigmoid
-      for(let h = 0; h < this.hiddennodes.length; h++)
-        {
-          this.hiddenSigmoid[h] = sigmoid(this.hiddennodes[h]);
-        }
-      //calc output neurons
-      for(let h = 0; h < this.hiddennodes.length; h++)
+      else
       {
-        for(let o = 0; o < this.outputnodes.length; o++)
+        //calc hidden neurons
+        this.loopThrough("InputHidden", function(i,h)
         {
-          this.outputnodes[o] += this.weightsHiddenOutput[h][o] * this.hiddenSigmoid[h];
-        }
+          sandwichNet.hiddennodes[h] += sandwichNet.weightsInputHidden[i][h] * inputValues[i];
+        });
+        //calc HiddenSigmoid
+        this.loopThrough("Hidden", function(h){
+          sandwichNet.hiddenSigmoid[h] = sigmoid(sandwichNet.hiddennodes[h]);
+        });
+        //calc output neurons
+        this.loopThrough("HiddenOutput", function(h,o)
+        {
+          sandwichNet.outputnodes[o] += sandwichNet.weightsHiddenOutput[h][o] * sandwichNet.hiddenSigmoid[h];
+        });
+        this.loopThrough("Output", function(o)
+        {
+          sandwichNet.outputSigmoid[o] = sigmoid(sandwichNet.outputnodes[o]);
+        });
       }
-      for(let o = 0; o < this.outputnodes.length; o++)
-      {
-        this.outputSigmoid[o] = sigmoid(this.outputnodes[o]);
-      }
-    }else
+    }
+    else
     {
       console.log("can't forward. input size must be equal layer size")
     }
@@ -184,6 +205,13 @@ class SimpleNeuralNet
 
   train(learningRate, layer, activationFunctionTyp)
   {
+
+    function boofuu(layer_1, layer_2)
+    {
+      
+    }
+
+
     switch(activationFunctionTyp)
     {
       case "Sigmoid":
@@ -225,6 +253,7 @@ class SimpleNeuralNet
 
   changeWeightsOnClick()
   { 
+    let sandwichNet = this;
     function manipulateWeights(val, pos, w, h)
     {
       if(mouseIsPressed === true)
@@ -251,29 +280,35 @@ class SimpleNeuralNet
       }
       return val;
     }
-      for(let i = 0; i < this.inputnodes.length; i++)
-      {    
-        for(let h = 0; h < this.hiddennodes.length; h++)
-        {
-          let v = createVector();
-          v.add(this.weightsInputHiddenPosition[i][h]);
-          this.weightsInputHidden[i][h] = manipulateWeights(this.weightsInputHidden[i][h],v,40,30);
-        }
-      }
-      for(let h = 0; h < this.hiddennodes.length; h++)  
+
+    if(this.hiddennodes.length == 0)
+    {
+      this.loopThrough("InputOutput", function(i,o)
       {
-        for(let o = 0; o < this.outputnodes.length; o++)
-        {
-          let v = createVector();
-          v.add(this.weightsHiddenOutputPosition[h][o]);
-          this.weightsHiddenOutput[h][o] = manipulateWeights(this.weightsHiddenOutput[h][o],v,40,30);
-        }
-      }
+        let v = createVector();
+        v.add(sandwichNet.weightsInputOutputPosition[i][o]);
+        sandwichNet.weightsInputOutput[i][o] = manipulateWeights(sandwichNet.weightsInputOutput[i][o],v,40,30);
+      });
+    }
+    else
+    {
+      this.loopThrough("InputHidden", function(i,h){
+        let v = createVector();
+        v.add(sandwichNet.weightsInputHiddenPosition[i][h]);
+        sandwichNet.weightsInputHidden[i][h] = manipulateWeights(sandwichNet.weightsInputHidden[i][h],v,40,30);
+      });
+      this.loopThrough("HiddenOutput", function(h,o){
+        let v = createVector();
+        v.add(sandwichNet.weightsHiddenOutputPosition[h][o]);
+        sandwichNet.weightsHiddenOutput[h][o] = manipulateWeights(sandwichNet.weightsHiddenOutput[h][o],v,40,30);
+      });
+    }
+      
   }
 
   update()
   {
-    
+    let sandwichNet = this;
     let spaceBetweenInputNeurons = this.netHeight / this.inputnodes.length;
     let offsetInput = spaceBetweenInputNeurons / 2;
     
@@ -303,34 +338,51 @@ class SimpleNeuralNet
       this.outputSigmoidPosition[o].set(this.netWidth, offsetOutput + spaceBetweenOutputNeurons * o);
 
     }
-    //Calc Input-Hidden Weights Position
-    for(let i = 0; i < this.inputnodes.length; i++)
-    {    
-      for(let h = 0; h < this.hiddennodes.length; h++)
-      {         
+    
+    if(this.hiddennodes.length == 0)
+    {
+      this.loopThrough("InputOutput", function(i,o){
         let v = createVector();
-        v.set(this.hiddennodesPosition[h])
-        v.sub(this.inputnodesPosition[i]);
+        v.set(sandwichNet.outputnodesPosition[o])
+        v.sub(sandwichNet.inputnodesPosition[i]);
         v.mult(0.17);
         let weightPosition = createVector();
-        weightPosition = v.add(this.inputnodesPosition[i]);
-        this.weightsInputHiddenPosition[i][h].set(weightPosition);
-      }
+        weightPosition = v.add(sandwichNet.inputnodesPosition[i]);
+        sandwichNet.weightsInputOutputPosition[i][o].set(weightPosition);
+      });
     }
-    //Calc Hidden-Output Weights Position
-    for(let h = 0; h < this.hiddennodes.length; h++)  
+    else
     {
-      for(let o = 0; o < this.outputnodes.length; o++)
+      //Calc Input-Hidden Weights Position
+      for(let i = 0; i < this.inputnodes.length; i++)
+      {    
+        for(let h = 0; h < this.hiddennodes.length; h++)
+        {         
+          let v = createVector();
+          v.set(this.hiddennodesPosition[h])
+          v.sub(this.inputnodesPosition[i]);
+          v.mult(0.17);
+          let weightPosition = createVector();
+          weightPosition = v.add(this.inputnodesPosition[i]);
+          this.weightsInputHiddenPosition[i][h].set(weightPosition);
+        }
+      }
+      //Calc Hidden-Output Weights Position
+      for(let h = 0; h < this.hiddennodes.length; h++)  
       {
-        let v = createVector();
-        v.set(this.outputnodesPosition[o])
-        v.sub(this.hiddenSigmoidPosition[h]);
-        v.mult(0.4);
-        let weightPosition = createVector();
-        weightPosition = v.add(this.hiddenSigmoidPosition[h]);
-        this.weightsHiddenOutputPosition[h][o].set(weightPosition);
+        for(let o = 0; o < this.outputnodes.length; o++)
+        {
+          let v = createVector();
+          v.set(this.outputnodesPosition[o])
+          v.sub(this.hiddenSigmoidPosition[h]);
+          v.mult(0.4);
+          let weightPosition = createVector();
+          weightPosition = v.add(this.hiddenSigmoidPosition[h]);
+          this.weightsHiddenOutputPosition[h][o].set(weightPosition);
+        }
       }
     }
+    
   }
 
   renderError()
@@ -399,6 +451,7 @@ class SimpleNeuralNet
 
   renderFeedForwardAnimation(animVal)
   {
+    sandwichNet = this;
     // Draw animated Circle
     function drawCircle(val, pos, active=1)
     { 
@@ -410,40 +463,51 @@ class SimpleNeuralNet
       fill(0);
     }
 
-    if(animVal > 0 && animVal <= 1)
+    if(this.hiddennodes.length == 0)
     {
-      for(let i = 0; i < this.inputnodes.length; i++)
-      {    
-        for(let h = 0; h < this.hiddennodes.length; h++)
+      this.loopThrough("InputOutput", function(i,o)
         {
           let animPos = createVector(0,0);
-          animPos.set(this.hiddennodesPosition[h]);
-          animPos.sub(this.inputnodesPosition[i]);
+          animPos.set(sandwichNet.outputnodesPosition[o]);
+          animPos.sub(sandwichNet.inputnodesPosition[i]);
+          animPos.mult(animVal/1.5);
+          animPos.add(sandwichNet.inputnodesPosition[i]);
+          drawCircle(sandwichNet.weightsInputOutput[i][o], animPos, sandwichNet.inputnodes[i]);
+        });
+    }
+    else
+    {
+      if(animVal > 0 && animVal <= 1)
+      {
+        this.loopThrough("InputHidden", function(i,h)
+        {
+          let animPos = createVector(0,0);
+          animPos.set(sandwichNet.hiddennodesPosition[h]);
+          animPos.sub(sandwichNet.inputnodesPosition[i]);
           animPos.mult(animVal);
-          animPos.add(this.inputnodesPosition[i]);
-          drawCircle(this.weightsInputHidden[i][h], animPos, this.inputnodes[i]);
-        }
+          animPos.add(sandwichNet.inputnodesPosition[i]);
+          drawCircle(sandwichNet.weightsInputHidden[i][h], animPos, sandwichNet.inputnodes[i]);
+        });    
+      }
+      if(animVal > 1 && animVal <= 2)
+      {
+        this.loopThrough("HiddenOutput", function(h,o)
+        {
+          let animPos = createVector(0,0);
+          animPos.set(sandwichNet.outputnodesPosition[o]);
+          animPos.sub(sandwichNet.hiddenSigmoidPosition[h]);
+          animPos.mult(2*(animVal-1));
+          animPos.add(sandwichNet.hiddenSigmoidPosition[h]);
+          drawCircle(sandwichNet.weightsHiddenOutput[h][o], animPos, 1);
+        });
       }
     }
-    if(animVal > 1 && animVal <= 2)
-    {
-      for(let h = 0; h < this.hiddennodes.length; h++)  
-      {
-        for(let o = 0; o < this.outputnodes.length; o++)
-        {
-          let animPos = createVector(0,0);
-          animPos.set(this.outputnodesPosition[o]);
-          animPos.sub(this.hiddenSigmoidPosition[h]);
-          animPos.mult(2*(animVal-1));
-          animPos.add(this.hiddenSigmoidPosition[h]);
-          drawCircle(this.weightsHiddenOutput[h][o], animPos, 1);
-        }
-      }
-    }    
   }
+
 
   renderNodesConnectionLines()
   {
+    let sandwichNet = this;
     function drawLine(pos1,pos2,value,active = 1)
     {
       if(value < 0)
@@ -474,38 +538,49 @@ class SimpleNeuralNet
       stroke(0);
       strokeWeight(2);
     }
-
-    //Draw Lines between Input and Hidden
-    for(let i = 0; i < this.inputnodes.length; i++)
-      {    
-        for(let h = 0; h < this.hiddennodes.length; h++)
-        {
-          drawLine(this.hiddennodesPosition[h], 
-            this.inputnodesPosition[i],
-            this.weightsInputHidden[i][h],
-            this.inputnodes[i]);
-        }
-      }
-    // Draw Lines between hiddennodes and hiddenSigmoidNodes
-    for(let h = 0; h < this.hiddennodes.length; h++)  
-    {  
-      drawLine(this.hiddennodesPosition[h],this.hiddenSigmoidPosition[h]);
-    }
-
-    //Draw Lines between Hidden and Output
-    for(let h = 0; h < this.hiddennodes.length; h++)  
+    if(this.hiddennodes.length == 0)
     {
-      for(let o = 0; o < this.outputnodes.length; o++)
-      {  
-      drawLine(this.hiddenSigmoidPosition[h],
-                this.outputnodesPosition[o],
-                this.weightsHiddenOutput[h][o]);
-      }
+      //Draw Lines between Input and Output
+      this.loopThrough("InputOutput", function(i,o)
+      {
+        drawLine(sandwichNet.outputnodesPosition[o], 
+          sandwichNet.inputnodesPosition[i],
+          sandwichNet.weightsInputOutput[i][o],
+          sandwichNet.inputnodes[i]);
+      });
+      // Draw Lines between outputnodes and outputSigmoidNodes
+      this.loopThrough("Output", function(o)
+      {
+        drawLine(sandwichNet.outputSigmoidPosition[o],sandwichNet.outputnodesPosition[o]);
+      });
     }
-    // Draw Lines between outputnodes and outputSigmoidNodes
-    for(let o = 0; o < this.outputnodes.length; o++)
+    else
     {
-      drawLine(this.outputSigmoidPosition[o],this.outputnodesPosition[o]);
+      //Draw Lines between Input and Hidden
+      this.loopThrough("InputHidden", function(i,h)
+      {
+        drawLine(sandwichNet.hiddennodesPosition[h], 
+          sandwichNet.inputnodesPosition[i],
+          sandwichNet.weightsInputHidden[i][h],
+          sandwichNet.inputnodes[i]);
+      });
+      // Draw Lines between hiddennodes and hiddenSigmoidNodes
+      this.loopThrough("Hidden", function(h)
+      {
+        drawLine(sandwichNet.hiddennodesPosition[h],sandwichNet.hiddenSigmoidPosition[h]);
+      });
+      //Draw Lines between Hidden and Output
+      this.loopThrough("HiddenOutput", function(h,o)
+      {
+        drawLine(sandwichNet.hiddenSigmoidPosition[h],
+          sandwichNet.outputnodesPosition[o],
+          sandwichNet.weightsHiddenOutput[h][o]);
+      });
+      // Draw Lines between outputnodes and outputSigmoidNodes
+      this.loopThrough("Output", function(o)
+      {
+        drawLine(sandwichNet.outputSigmoidPosition[o],sandwichNet.outputnodesPosition[o]);
+      });
     }
   }
 
@@ -538,25 +613,71 @@ class SimpleNeuralNet
       textSize(16);
       pop();
     }
-
-    this.loopThrough("Input", function(i)
+    if(this.hiddennodes.length == 0)
+    {
+      this.loopThrough("Input", function(i)
       {
         drawNeuron(sandwichNet.inputnodesPosition[i], circleRadius, sandwichNet.inputnodes[i], sandwichNet.inputnodes[i]); 
-      }
-    );
-    this.loopThrough("Hidden", function(h)
+      });
+      this.loopThrough("Output",function(o)
+      {
+        drawNeuron(sandwichNet.outputnodesPosition[o], circleRadius, sandwichNet.outputnodes[o], sandwichNet.outputnodes[o]);
+        drawNeuron(sandwichNet.outputSigmoidPosition[o], circleRadius,sandwichNet.outputSigmoid[o], sandwichNet.outputSigmoid[o]);
+      });
+    }
+    else
+    {
+      this.loopThrough("Input", function(i)
+      {
+        drawNeuron(sandwichNet.inputnodesPosition[i], circleRadius, sandwichNet.inputnodes[i], sandwichNet.inputnodes[i]); 
+      });
+      this.loopThrough("Hidden", function(h)
       {
         //Draw Hidden Neurons as Circle and Value
         drawNeuron(sandwichNet.hiddennodesPosition[h], circleRadius, sandwichNet.hiddennodes[h], sandwichNet.hiddennodes[h]);
         drawNeuron(sandwichNet.hiddenSigmoidPosition[h], circleRadius,sandwichNet.hiddenSigmoid[h], sandwichNet.hiddenSigmoid[h]);
-      }
-    );
-    this.loopThrough("Output",function(o)
+      });
+      this.loopThrough("Output",function(o)
       {
         drawNeuron(sandwichNet.outputnodesPosition[o], circleRadius, sandwichNet.outputnodes[o], sandwichNet.outputnodes[o]);
         drawNeuron(sandwichNet.outputSigmoidPosition[o], circleRadius,sandwichNet.outputSigmoid[o], sandwichNet.outputSigmoid[o]);
-      }
-    );
+      });
+    }
+
+
+  }
+
+  renderNeuronsBG()
+  {
+    let sandwichNet = this;
+    function neuronBG(neuronPos,sigmoidPos)
+    {
+      strokeWeight(5);
+      fill(255);
+      stroke(0);
+      circle( (neuronPos.x+sigmoidPos.x)/2, (neuronPos.y+sigmoidPos.y)/2, 160 )
+      noFill();
+      stroke(0);
+    }
+    if(this.hiddennodes.length == 0)
+    {
+      this.loopThrough("Output",function(o)
+      {
+        neuronBG(sandwichNet.outputnodesPosition[o],sandwichNet.outputSigmoidPosition[o]);
+      });
+    }
+    else
+    {
+      this.loopThrough("Hidden", function(h)
+      {
+        neuronBG(sandwichNet.hiddennodesPosition[h],sandwichNet.hiddenSigmoidPosition[h])
+      });
+      this.loopThrough("Output",function(o)
+      {
+        neuronBG(sandwichNet.outputnodesPosition[o],sandwichNet.outputSigmoidPosition[o])
+      });
+    }
+
 
   }
 
@@ -568,33 +689,42 @@ class SimpleNeuralNet
     function drawWeights(pos,w,h,value)
     {
       push();
-      textAlign(CENTER);
-      strokeWeight(2);
-      stroke(0);  
-      translate(pos.x, pos.y);
-      //rectMode(CENTER);
-      fill(255);
-      rect(-w/2,-h/2,w,h);
-      rect(w/2,-h/2,20,h,0,h,h,0);
-      rect(-w/2-20,-h/2,20,h,h,0,0,h);
-      fill(0);
-      noStroke();
-      textSize(14);
-      text(value.toFixed(2),0,5);
-      text("–",-(w/2 + 10),5);
-      text("+",w/2+10,5);
+        textAlign(CENTER);
+        strokeWeight(2);
+        stroke(0);  
+        translate(pos.x, pos.y);
+        //rectMode(CENTER);
+        fill(255);
+        rect(-w/2,-h/2,w,h);
+        rect(w/2,-h/2,20,h,0,h,h,0);
+        rect(-w/2-20,-h/2,20,h,h,0,0,h);
+        fill(0);
+        noStroke();
+        textSize(14);
+        text(value.toFixed(2),0,5);
+        text("–",-(w/2 + 10),5);
+        text("+",w/2+10,5);
       pop();
     }
-    this.loopThrough("InputHidden", function(i,h)
+    if(this.hiddennodes.length == 0)
+    {
+      this.loopThrough("InputOutput", function(i,o)
+      {
+        drawWeights(sandwichNet.weightsInputOutputPosition[i][o], rectangleWidth, rectangleHeight, sandwichNet.weightsInputOutput[i][o]);     
+      });
+    }
+    else
+    {
+      this.loopThrough("InputHidden", function(i,h)
       {
         drawWeights(sandwichNet.weightsInputHiddenPosition[i][h], rectangleWidth, rectangleHeight, sandwichNet.weightsInputHidden[i][h]);     
-      }
-    );
-    this.loopThrough("HiddenOutput",function(h,o)
+      });
+      this.loopThrough("HiddenOutput",function(h,o)
       {
         drawWeights(sandwichNet.weightsHiddenOutputPosition[h][o], rectangleWidth, rectangleHeight, sandwichNet.weightsHiddenOutput[h][o]);
-      }
-    );
+      });
+    }
+    
 
   }
 

@@ -10,12 +10,12 @@ let netH = 800;
 
 var inputNodes = 4;
 var inputNodesMin = 1;
-var inputNodesMax = 10;
+var inputNodesMax = 6;
 var inputNodesStep = 1;
 
 var hiddenNodes = 2;
 var hiddenNodesMin = 1;
-var hiddenNodesMax = 20;
+var hiddenNodesMax = 3;
 var hiddenNodesStep = 1;
 
 var outputNodes = 1;
@@ -24,9 +24,11 @@ var outputNodesMax = 3;
 var outputNodesStep = 1;
 
 var learningRate = 10;
-var learningRateMin = 1;
+var learningRateMin = 0;
 var learningRateMax = 20;
-var learningRateStep = 1;
+var learningRateStep = 0.1;
+
+let level = 2;
 
 let oldInputNodes;
 let oldHiddenNodes;
@@ -38,29 +40,36 @@ let sandwich = [];
 let sandwich_image = [];
 let ingredientsArrow;
 let tasteOMeter_anzeige;
-let tasteOMeter;
+let tasteOMeter_3;
+let tasteOMeter_2;
 let ingredientsList = ["Käse","Eierschalen","Matsch","Hühnchen","Erdnusbutter","Marmelade","Dünger","Grobe Mettwurst","Tonscherben","Majo","Salat",""]
 
 
 function preload() {
+  const queryString = window.location.search;
+  if(queryString)
+  {
+    const urlParams = new URLSearchParams(queryString);
+    level = urlParams.get('level')
+    print("jump to Level " + level);
+  }
+  else
+  {
+    print("No level set, jump to Level 2");
+  }
   sandwich_image[0] = loadImage('./img/sandwich-01.png');
   sandwich_image[1] = loadImage('./img/sandwich-02.png');
   //tasteOMeter_anzeige = loadImage('./img/tasteOmeter_anzeige.png');
   tasteOMeter_anzeige = loadImage('./img/tastometer_03_anzeige.png');
   //tasteOMeter = loadImage('./img/tasteOmeter.png');
-  tasteOMeter = loadImage('./img/tastometer_03_meter.png');
+  tasteOMeter_3 = loadImage('./img/tastometer_03_meter.png');
+  tasteOMeter_2 = loadImage('./img/tastometer_02_meter.png');
   ingredientsArrow = loadImage('./img/ingrediensArrow.png');
 }
 
 function setup() 
 {
 
-/*
-  w = displayWidth;
-  h = displayHeight;
-  netW = displayWidth * 0.7;
-  netH = displayHeight * 0.5;
-*/
   w = windowWidth;
   h = windowHeight;
   oldW = w;
@@ -70,9 +79,24 @@ function setup()
 
   createCanvas(w, h);
   frameRate(60);
-  var gui = createGui('Neural Network Config');
-  gui.addGlobals('inputNodes', 'hiddenNodes', 'outputNodes', 'learningRate');
-  gui.toggleCollapsed();
+  if(level == 3)
+  {
+    var gui = createGui('Neural Network Config');
+    gui.addGlobals('inputNodes', 'hiddenNodes', 'outputNodes', 'learningRate');
+    //gui.toggleCollapsed();
+  }
+  if(level == 1)
+  {
+    inputNodes = 4;
+    hiddenNodes = 0;
+    outputNodes = 1;
+  }
+  if(level == 2)
+  {
+    inputNodes = 4;
+    hiddenNodes = 2;
+    outputNodes = 1;
+  }
   
   oldInputNodes = inputNodes;
   oldHiddenNodes = hiddenNodes;
@@ -80,7 +104,7 @@ function setup()
 
   sandwichNet = new SimpleNeuralNet(inputNodes, hiddenNodes, outputNodes, netW, netH);
   sandwichNet.forward(v);
-  background(220);
+  background(230,255,255);
   sandwichNet.update(netW,netH);
 
   //errorGraph = new ErrorGraph(w,50);
@@ -150,7 +174,7 @@ if(oldInputNodes != inputNodes || oldHiddenNodes != hiddenNodes || oldOutputNode
     anim += 0.01;
     if(anim > 1.5){anim = 0} 
   }
-
+  //sandwichNet.renderNeuronsBG();
   sandwichNet.renderNodesConnectionLines();
   sandwichNet.renderFeedForwardAnimation(anim);
   
@@ -159,11 +183,18 @@ if(oldInputNodes != inputNodes || oldHiddenNodes != hiddenNodes || oldOutputNode
   sandwichNet.renderSandwichIngredients(ingredientsList);
   sandwichNet.renderTasteOMeter();
   sandwichNet.renderNeurons();
-  if(aktivateButton == true)
+  
+  
+  if(level == 3)
   {
-  sandwichNet.updateError();
-  sandwichNet.renderError();
+    if(aktivateButton == true)
+    {
+    sandwichNet.updateError();
+    sandwichNet.renderError();
+    }
   }
+
+  
   sandwichNet.renderSigmoidGraph();
   pop();
   
@@ -190,7 +221,8 @@ if(oldInputNodes != inputNodes || oldHiddenNodes != hiddenNodes || oldOutputNode
 
   // ##### Portal Ende #
 
-
+if(level == 3)
+{
   let counter = 0;
   textAlign(CENTER);
   for(let i = 0; i < sandwichNet.tasteOMeter.length; i++)
@@ -248,26 +280,34 @@ if(oldInputNodes != inputNodes || oldHiddenNodes != hiddenNodes || oldOutputNode
     sandwichNet.calcErrorForTrain();
     trainButtonClicked = false;
   }
-  else
-  {
-    if(sandwich.length > 0)
-    {
-      for (let i = 0; i < sandwich.length; i++) 
-      {
-        sandwich[i].render();
-        sandwich[i].pysics();
-      }
-      sandwich[sandwich.length-1].renderIngrediens();
-      sandwichNet.forward(sandwich[sandwich.length-1].taste);
-    }
-  }
-  
-  //errorGraph.render();
-
-
 }
 
-function mouseClicked() {
+if(sandwich.length > 0)
+  {
+    for (let i = 0; i < sandwich.length; i++) 
+    {
+      sandwich[i].render();
+      sandwich[i].pysics();
+    }
+    sandwich[sandwich.length-1].renderIngrediens();
+    sandwichNet.forward(sandwich[sandwich.length-1].taste);
+  }
+}
+
+function mouseClicked() 
+{
+  startTraining();
+
+  
+  if(mouseX < w/2 + 75 && mouseX > w/2 - 75 && mouseY < h-100 + 20 && mouseY > h-100 - 20 )
+  {
+    generateNewSandwich();
+  }
+  
+}
+
+function startTraining()
+{
   if(aktivateButton == true)
   {
     if(mouseX < w/2 + 75 + offsetTrainButton && mouseX > w/2 - 75 + offsetTrainButton && mouseY < h-100 + 20 && mouseY > h-100 - 20 )
@@ -282,19 +322,21 @@ function mouseClicked() {
     //errorGraph.update(error);
     aktivateButton = false;
   }
-  if(mouseX < w/2 + 75 && mouseX > w/2 - 75 && mouseY < h-100 + 20 && mouseY > h-100 - 20 ){
-    sandwich.push(new Sandwich(inputNodes, ingredientsList));
-    for(let i = 0; i < sandwichNet.tasteOMeter.length; i++)
-    {
-      sandwichNet.tasteOMeter[i].manualOutputValue = false;
-    }
+}
+
+function generateNewSandwich()
+{
+  sandwich.push(new Sandwich(inputNodes, ingredientsList));
+  for(let i = 0; i < sandwichNet.tasteOMeter.length; i++)
+  {
+    sandwichNet.tasteOMeter[i].manualOutputValue = false;
   }
   if(sandwich.length > 100)
-    {
-      sandwich.shift();
-    }
-  
+  {
+    sandwich.shift();
+  }
 }
+
 
 function windowResized() 
 {
