@@ -8,6 +8,7 @@ class Sandwich
     this.groundPosition = random(30,80);
     this.taste = [];
     this.alpha = 0;
+    this.dezimalPositon = 0;
     this.ingrediensText = "";
     this.ingredientsList = ingredientsList;
     this.alphaRotaionSpeed = random(-0.2,0.2);
@@ -20,32 +21,43 @@ class Sandwich
         this.ingrediensText += this.ingredientsList[i];
       }
     }
+    for(let i = this.taste.length-1; i > -1; i--)
+    {
+      this.dezimalPositon += this.taste[i] * Math.pow(2,i);
+    }
     this.ingrediensText +="Sandwich";
     this.sandwich_image_number = int(random(0,2));
   }
   renderIngrediens()
   {
     push();
-    translate(this.position.x, this.position.y);
-    
-    let w = textWidth(this.ingrediensText);
-    let offsetY = 80;
-    rectMode(CENTER);
-    fill(255,255,255);
-    rect(-15,-offsetY-5,w+15,20,4);
-    
-    push();
-      translate(-50,-offsetY);
-      scale(0.25);
-      image(ingredientsArrow,0,0);
-    pop();
-    
-    rectMode(CORNER);
-    fill(0);
-    noStroke();
-    textSize(16);
-    textStyle(BOLD);
-    text(this.ingrediensText,-15,-offsetY);
+      translate(this.position.x, this.position.y);
+      
+      //let txtWidth = textWidth(this.ingrediensText);
+      let txtWidth = this.ingrediensText.length*9;
+      //print(w);
+      //print(this.ingrediensText.length)
+      let offsetY = 80;
+      
+      push();
+        translate(-50,-offsetY);
+        scale(0.25);
+        image(ingredientsArrow,0,-10);
+      pop();
+
+      rectMode(CENTER);
+      textAlign(CENTER);
+      stroke(0);
+      strokeWeight(3);
+      fill(255,255,255);
+      rect(-15,-offsetY-5,txtWidth+40,20+10,4);
+      //rect(-15,-offsetY-5,txtWidth*1.4+20,20+10,4);
+      
+      fill(0);
+      noStroke();
+      textSize(16);
+      textStyle(BOLD);
+      text(this.ingrediensText,-15,-offsetY);
     pop();
   }
   render()
@@ -75,4 +87,5 @@ class Sandwich
       this.velocity.add(this.gravity);
     }
   }
+  
 }

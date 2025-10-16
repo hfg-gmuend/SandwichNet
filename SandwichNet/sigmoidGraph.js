@@ -79,8 +79,9 @@ class SigmoidGraph
   
   render(position)
   { 
-    
-      push();
+    rectMode(CORNER);
+    textAlign(LEFT);
+    push();
       this.pos = position;
       fill(255);
       stroke(0);
@@ -89,112 +90,106 @@ class SigmoidGraph
       translate(this.pos.x,this.pos.y)
 
       push();
-      scale(this.scl);
-      circle(0,0,this.d);
-      fill(0);
-      // draw Graphlines
-      stroke(0,0,255);
-      strokeWeight(1);
+        scale(this.scl);
+        circle(0,0,this.d);
+        fill(0);
+        // draw Graphlines
+        stroke(0,0,255);
+        strokeWeight(1);
 
-      push();
-
-      translate(0, 0-(this.sclY/2));
-      line(-this.d/2.2,0,this.d/2.2,0);
-      for(let i = -1; i < 1; i+=0.1)
-      {
-        line((this.d/2.2)*i,2,(this.d/2.2)*i,-2);
-      }
-      translate(0,(this.sclY/2));
-      line(0,-this.d/2,0,this.d/2);
-      for(let i = -2; i <= 2; i+=0.5)
-      {
-        line(-2,(this.sclY/2)*i,2,(this.sclY/2)*i);
-      }
-      
-      
-      pop();
-
-
-      // Draw Sigmoidfunction as curve
-      stroke(0);
-      strokeWeight(2);
-      
-      for(let x = -10; x < 10; x++)
-        {
-          push();
+        push();
           translate(0, 0-(this.sclY/2));
-          //point(10*x,-60*y[x]);
-          curve(this.sclX*(x-1),this.sclY*this.y[x-1],this.sclX*x,this.sclY*this.y[x],this.sclX*(x+1),this.sclY*this.y[x+1],this.sclX*(x+2),this.sclY*this.y[x+2]);
+          line(-this.d/2.2,0,this.d/2.2,0);
+          for(let i = -1; i < 1; i+=0.1)
+          {
+            line((this.d/2.2)*i,2,(this.d/2.2)*i,-2);
+          }
+          translate(0,(this.sclY/2));
+          line(0,-this.d/2,0,this.d/2);
+          for(let i = -2; i <= 2; i+=0.5)
+          {
+            line(-2,(this.sclY/2)*i,2,(this.sclY/2)*i);
+          }
+        pop();
+
+        // Draw Sigmoidfunction as curve
+        stroke(0);
+        strokeWeight(2);
+    
+        for(let x = -10; x < 10; x++)
+          {
+            push();
+              translate(0, 0-(this.sclY/2));
+              //point(10*x,-60*y[x]);
+              curve(this.sclX*(x-1),this.sclY*this.y[x-1],this.sclX*x,this.sclY*this.y[x],this.sclX*(x+1),this.sclY*this.y[x+1],this.sclX*(x+2),this.sclY*this.y[x+2]);
+            pop();
+          }
+
+        push();
+          translate(0,0-(this.sclY/2));
+
+          stroke(0,0,255);
+          strokeWeight(1);
+          
+          line(0,this.sclY*this.sigmoid(this.input),this.sclX*this.input,this.sclY*this.sigmoid(this.input));
+          line(this.sclX*this.input, 0, this.sclX*this.input, this.sclY*this.sigmoid(this.input));
+          
+          noStroke();
+          textSize(16);
+          fill(255,255,255);
+          let h = 15
+          let w = 32;
+        
+          // draw Y Value
+          push();
+            if(this.sigmoid(this.input) > 0.5)
+            {
+              translate(-38,5);
+            }
+            else
+            {
+              translate(+8,5);
+            }
+            rect(0,this.sclY*this.sigmoid(this.input)-(h/2)-4,w,h, 3);
+            fill(0);
+            text(this.sigmoid(this.inputForTextfield).toFixed(2), -1,this.sclY*this.sigmoid(this.input));
           pop();
-        }
-
-      push();
-      translate(0,0-(this.sclY/2));
-
-      stroke(0,0,255);
-      strokeWeight(1);
-      
-      line(0,this.sclY*this.sigmoid(this.input),this.sclX*this.input,this.sclY*this.sigmoid(this.input));
-      line(this.sclX*this.input, 0, this.sclX*this.input, this.sclY*this.sigmoid(this.input));
-      
-      noStroke();
-      textSize(16);
-      fill(255,255,255);
-      rectMode(RADIUS);
-      let h = 8
-      let w = 18;
-      
-      // draw Y Value
-      push();
-        if(this.sigmoid(this.input) > 0.5)
-        {
-          translate(-20,5);
-        }
-        else
-        {
-          translate(+20,5);
-        }
-        rect(0,this.sclY*this.sigmoid(this.input)-(h/2)-2,w,h, 3);
-        fill(0);
-        text(this.sigmoid(this.inputForTextfield).toFixed(2), -1,this.sclY*this.sigmoid(this.input));
-      pop();
-      // draw X Value
-      push();
-        translate(0,20);
-        fill(255);
-        rect(this.sclX*this.input,-(h/2)-2,w,h, 3);
-        fill(0);
-        text(this.inputForTextfield.toFixed(2),this.sclX*this.input -1,0);
-      pop();
-      stroke(0);
-      strokeWeight(10);
-      
-      point(this.sclX*this.input,this.sclY*this.sigmoid(this.input));
-      pop();
+          // draw X Value
+          push();
+            translate(0,20);
+            fill(255,255,255);
+            rect(this.sclX*this.input-w/2,-(h/2)-4,w,h, 3);
+            fill(0);
+            text(this.inputForTextfield.toFixed(2),this.sclX*this.input -w/2,0);
+          pop();
+          stroke(0);
+          strokeWeight(10);
+    
+          point(this.sclX*this.input,this.sclY*this.sigmoid(this.input));
+        pop();
       pop();  
 
 
-    if(this.isActive == false)
-    {
-      if(this.scl > 0)
+      if(this.isActive == false)
       {
-        this.scl -= 0.1;
+        if(this.scl > 0)
+        {
+          this.scl -= 0.1;
+        }
+        else
+        {
+          stroke(0);
+          strokeWeight(3);
+          circle(0,0,12);
+        }
       }
-      else
+      if(this.isActive == true)
       {
-        stroke(0);
-        strokeWeight(3);
-        circle(0,0,12);
-      }
-    }
-    if(this.isActive == true)
-    {
-      if(this.scl < 1)
-      {
-        this.scl += 0.1;
-      }
-    } 
-    
+        if(this.scl < 1)
+        {
+          this.scl += 0.1;
+        }
+      } 
     pop();
   }
   

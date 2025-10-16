@@ -146,11 +146,16 @@
       };
   
       // pass through ...
+      this.toggleCollapsed = function() { qs.toggleCollapsed(); };
       this.show = function() { qs.show(); };
       this.hide = function() { qs.hide(); };
       this.toggleVisibility = function() { qs.toggleVisibility(); };
       this.setPosition  = function(x, y) {
         qs.setPosition(x, y);
+        return this;
+      };
+      this.setSize  = function(x, y) {
+        qs.setSize(x, y);
         return this;
       };
   
