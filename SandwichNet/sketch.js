@@ -208,6 +208,7 @@ function setup()
   { 
     var ConfigGUI = createGui('Neural Network Config');
     ConfigGUI.addGlobals('hiddenNodes', 'learningRate', 'trainingSteps');
+    ConfigGUI.setSize(250,185);
     var DatasetGUI = createGui('Dataset');
     DatasetGUI.addGlobals
     (
@@ -229,7 +230,7 @@ function setup()
       'CheesePineappleLettuceChicken'
     );
     DatasetGUI.setPosition(10,250);
-    DatasetGUI.setSize(300,400);
+    DatasetGUI.setSize(250,400);
     //gui.toggleCollapsed();
   }
   if(level == 1)
