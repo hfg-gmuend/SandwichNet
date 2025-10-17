@@ -382,21 +382,7 @@ function draw()
   pop();
   //##### Toaster Ende #######
 
-  //##### Hinweis ###########
-  push();
-  translate(w/2-80,h-60);
-  // fill(255,0,0)
-  // rect(0,0,20,20);
-  if(firstSandwichWasGenerated == true && hinweisAnimation < 1.2)
-  {
-    hinweisAnimation += 0.01;
-  }
-  rotate(-easeInQuart(hinweisAnimation));
-  translate(-30,-400);
-  scale(0.7);
-  image(hinweis,0,0,224,573);
-  pop();
-  //##### Hinweis Ende #######
+
 
 if(sandwich.length > 0)
   {
@@ -460,6 +446,23 @@ if(sandwich.length > 0)
 
   sandwichNet.renderSigmoidGraph();
   pop();
+  
+  //##### Hinweis ###########
+  push();
+  translate(w/2-80,h-60);
+  // fill(255,0,0)
+  // rect(0,0,20,20);
+  if(firstSandwichWasGenerated == true && hinweisAnimation < 1.2)
+  {
+    hinweisAnimation += 0.01;
+  }
+  rotate(-easeInQuart(hinweisAnimation));
+  translate(-30,-400);
+  scale(0.7);
+  image(hinweis,0,0,224,573);
+  pop();
+  //##### Hinweis Ende #######
+
   
   if(level == 3)
   {
