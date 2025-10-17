@@ -559,10 +559,6 @@ if(sandwich.length > 0)
 
 function mouseClicked() 
 {
-  if(mouseX < w/2 + 75 + offsetTrainButton && mouseX > w/2 - 75 + offsetTrainButton && mouseY < h-100 + 20 && mouseY > h-100 - 20 )
-  {
-    startTraining();
-  }
   if(mouseX < w/2 + 75 && mouseX > w/2 - 75 && mouseY < h-100 + 35 && mouseY > h-100 - 35 )
   {
     generateNewSandwich();
