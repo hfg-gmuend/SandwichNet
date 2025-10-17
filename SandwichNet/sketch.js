@@ -134,7 +134,11 @@ let tasteOMeter_3;
 let tasteOMeter_2;
 let portal;
 let toaster;
+let hinweis;
+let aidLogo;
+let hinweisAnimation = 0;
 let ingredientsList = ["Käse","Eierschalen","Matsch","Hühnchen","Erdnusbutter","Marmelade","Dünger","Grobe Mettwurst","Tonscherben","Majo","Salat",""]
+let firstSandwichWasGenerated = false;
 
 let ingrediensVariations = [
   'BreadOnly',
@@ -167,11 +171,26 @@ function preload() {
     lang = urlParams.get('lang');
     if(lang == "de")
     {
-      ingredientsList = ["Käse","Eierschalen","Matsch","Hühnchen","Erdnusbutter","Marmelade","Dünger","Grobe Mettwurst","Tonscherben","Majo","Salat",""]
+      if(level == 4)
+      {
+        ingredientsList = ["Käse","Ananas","Kopfsalat","Hühnchen","Erdnusbutter","Marmelade","Dünger","Grobe Mettwurst","Tonscherben","Majo","Salat",""]
+      }
+      else
+      {
+        ingredientsList = ["Käse","Eierschalen","Matsch","Hühnchen","Erdnusbutter","Marmelade","Dünger","Grobe Mettwurst","Tonscherben","Majo","Salat",""]
+      }
     }
     if(lang == "en")
     {
-      ingredientsList = ["Cheese", "Pineapple", "Lettuce", "Chicken", "PeanutButter", "Jam", "Fertilizer", "Sausage", "Clay", "Mayonnaise", "Salad",""]
+      if(level == 4)
+      {
+        ingredientsList = ["Cheese", "Pineapple", "Lettuce", "Chicken", "PeanutButter", "Jam", "Fertilizer", "Sausage", "Clay", "Mayonnaise", "Salad",""]
+      }
+      else
+      {
+        ingredientsList = ["Cheese", "Eggshells", "Mud", "Chicken", "PeanutButter", "Jam", "Fertilizer", "Sausage", "Clay", "Mayonnaise", "Salad",""]
+      }
+
     }
   }
   else
@@ -190,6 +209,8 @@ function preload() {
   ingredientsArrow = loadImage('./img/ingrediensArrow.png');
   portal = loadImage('./img/portal.png');
   toaster = loadImage('./img/toaster.png');
+  hinweis = loadImage('./img/hinweis.png');
+  aidLogo = loadImage('./img/logo-aidplus.svg');
 }
 
 function setup() 
@@ -323,30 +344,53 @@ if(oldInputNodes != inputNodes || oldHiddenNodes != hiddenNodes || oldOutputNode
     background(230,255,255);
   }
 
-  // ##### Portal #####
-
-fill(0);
-push();
-translate(w/2,h-100);
-if(mouseIsPressed && mouseX < w/2 + 75 && mouseX > w/2 - 75 && mouseY < h-100 + 20 && mouseY > h-100 - 20)
-{ 
-  scale(0.8);
-}
-else
-{
-  scale(1);
-}
-imageMode(CENTER);
-image(portal,0,0,150,80);
-//ellipse(0,0,150,40);
-imageMode(CORNER);
-pop();
-
-  // ##### Portal Ende #
+  //##### Portal ###########
+  fill(0);
   push();
-  translate(w-150,h-170);
-  image(toaster,0,0,140,140);
+  translate(w/2,h-100);
+  if(mouseIsPressed && mouseX < w/2 + 75 && mouseX > w/2 - 75 && mouseY < h-100 + 20 && mouseY > h-100 - 20)
+  { 
+    scale(0.8);
+  }
+  else
+  {
+    scale(1);
+  }
+  imageMode(CENTER);
+  image(portal,0,0,150,80);
+  //ellipse(0,0,150,40);
+  imageMode(CORNER);
   pop();
+  //##### Portal Ende #######
+
+  //##### Toaster ###########
+  push();
+  translate(w-400,h-190);
+  noStroke();
+  fill(0,0,0,15)
+  ellipse(70,105,130,65);
+  image(toaster,0,0,140,140);
+  scale(1.1);
+  image(aidLogo,130,50,190,48);
+
+  pop();
+  //##### Toaster Ende #######
+
+  //##### Hinweis ###########
+  push();
+  translate(w/2-80,h-60);
+  // fill(255,0,0)
+  // rect(0,0,20,20);
+  if(firstSandwichWasGenerated == true && hinweisAnimation < 1.2)
+  {
+    hinweisAnimation += 0.01;
+  }
+  rotate(-easeInQuart(hinweisAnimation));
+  translate(-30,-400);
+  scale(0.7);
+  image(hinweis,0,0,224,573);
+  pop();
+  //##### Hinweis Ende #######
 
 if(sandwich.length > 0)
   {
@@ -593,11 +637,16 @@ function startTraining()
 
 
 function generateNewSandwich()
-{
+{ 
   sandwich.push(new Sandwich(inputNodes, ingredientsList));
   if(sandwich.length > 100)
   {
     sandwich.shift();
+  }
+  if(firstSandwichWasGenerated == false)
+  {
+    firstSandwichWasGenerated = true;
+    hinweisAnimation = 0.5;
   }
 }
 
@@ -628,4 +677,7 @@ function windowResized()
   netH = windowHeight * 0.8;
   resizeCanvas(w, h);
   sandwichNet.changeNetSize(netW,netH);
+}
+function easeInQuart(x){
+return x * x * x * x;
 }

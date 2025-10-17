@@ -3,9 +3,25 @@ class Sandwich
   constructor(inputNeuronsSize, ingredientsList)
   {
     this.position = createVector(width/2, height-130);
-    this.velocity = createVector(random(-5,5),-random(15,25));
+    this.velocity = createVector(random(-5,5),-random(15,25)); // 
     this.gravity = createVector(0,0.4);
-    this.groundPosition = random(0,200);
+    this.groundPosition = random(20,250); // 0,250
+    if(this.groundPosition > 110 && this.groundPosition < 150)
+    {
+      if(this.velocity.x > -0.8 && this.velocity.x < 0.8)
+      {
+        if(this.velocity.x < 0)
+        {
+          this.velocity.x += -0.8;
+        }
+        if(this.velocity.x > 0)
+        {
+          this.velocity.x += 0.8;
+        }
+        console.log("add a bit more");
+        console.log(this.velocity.x);
+      }
+    }
     this.taste = [];
     this.alpha = 0;
     this.dezimalPositon = 0;
@@ -13,6 +29,7 @@ class Sandwich
     this.ingredientsList = ingredientsList;
     this.alphaRotaionSpeed = random(-0.2,0.2);
     this.hasLandedOnPortal = false;
+    this.sandwichHasLanded = false;
     for(let i = 0; i < inputNeuronsSize; i++)
     {
       let rnd = int(random(0,2));
@@ -68,12 +85,16 @@ class Sandwich
     
     push();
     translate(this.position.x, this.position.y);
-    rotate(this.alpha);
-    let s = 0;
-    if(this.velocity.y > 0){
-      s = (this.groundPosition/260)*0.4;
+    if(this.sandwichHasLanded)
+    { 
+      noStroke();
+      fill(0,0,0,15)
+      ellipse(0,20,80,40);
     }
-    scale(0.5+s);
+    rotate(this.alpha);
+    //let s = ( this.position.y / (height)) * 0.3 ;
+    //let s = Math.pow(1.002,(this.position.y)) * 0.1 ;
+    scale(0.5);
     translate(-75,-75);
     image(sandwich_image[this.sandwich_image_number],0,0);  
     pop();
@@ -85,6 +106,7 @@ class Sandwich
     {
       this.velocity.set(0,0);
       this.alphaRotaionSpeed = 0;
+      this.sandwichHasLanded = true;
       if(this.position.x < w/2 + 75 && this.position.x > w/2 - 75 && this.position.y < h-100 + 20 && this.position.y > h-100 - 20 )
       {
         this.hasLandedOnPortal = true;
