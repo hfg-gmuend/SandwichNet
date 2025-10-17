@@ -6,7 +6,7 @@ class Sandwich
     this.velocity = createVector(random(-5,5),-random(15,25)); // 
     this.gravity = createVector(0,0.4);
     this.groundPosition = random(20,250); // 0,250
-    if(this.groundPosition > 110 && this.groundPosition < 150)
+    if(this.groundPosition > 60 && this.groundPosition < 160)
     {
       if(this.velocity.x > -0.8 && this.velocity.x < 0.8)
       {

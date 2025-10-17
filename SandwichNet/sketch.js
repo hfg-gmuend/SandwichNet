@@ -384,17 +384,6 @@ function draw()
 
 
 
-if(sandwich.length > 0)
-  {
-    for (let i = 0; i < sandwich.length; i++) 
-    {
-      sandwich[i].render();
-      sandwich[i].pysics();
-    }
-    sandwich[sandwich.length-1].renderIngrediens();
-    sandwichNet.forward(sandwich[sandwich.length-1].taste);
-  }
-
 
   sandwichNet.update();
   sandwichNet.changeWeightsOnClick();
@@ -462,7 +451,18 @@ if(sandwich.length > 0)
   image(hinweis,0,0,224,573);
   pop();
   //##### Hinweis Ende #######
-
+  //##### Sandwiches #######
+  if(sandwich.length > 0)
+  {
+    for (let i = 0; i < sandwich.length; i++) 
+    {
+      sandwich[i].render();
+      sandwich[i].pysics();
+    }
+    sandwich[sandwich.length-1].renderIngrediens();
+    sandwichNet.forward(sandwich[sandwich.length-1].taste);
+  }
+  //##### Sandwiches Ende #######
   
   if(level == 3)
   {
@@ -478,41 +478,8 @@ if(sandwich.length > 0)
     if(counter == sandwichNet.tasteOMeter.length)
     {
       aktivateButton = true
-    }
-    
-    // if(aktivateButton == true)
-    // {
-    //   //TrainButton activated
-    //   rectMode(CENTER);
-    //   fill(255);
-    //   stroke(0);
-    //   strokeWeight(5);
-    //   rect(w/2+offsetTrainButton,h-100,150,40);
-    //   fill(0);
-    //   noStroke(0);
-    //   textSize(22);
-    //   text("Train!",w/2+offsetTrainButton,h-95);
-    // }
-    // else
-    // {
-    //   //TrainButton deactiveted
-    //   rectMode(CENTER);
-    //   fill(255);
-    //   stroke(200);
-    //   strokeWeight(5);
-    //   rect(w/2+offsetTrainButton,h-100,150,40);
-    //   fill(200);
-    //   noStroke(0);
-    //   textSize(22);
-    //   text("Train!",w/2+offsetTrainButton,h-95);
-    //   textSize(16);
-    //   text("Change Output Value to Train ...",w/2+offsetTrainButton+40,h-50);
-    // }
-    
-    fill(0);
+    } 
 
-    rectMode(CORNER);
-    
     //Train sequenze
     if(trainButtonClicked == true)
     {
