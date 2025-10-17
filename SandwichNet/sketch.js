@@ -427,7 +427,7 @@ function draw()
     hinweisAnimation += 0.01;
   }
   rotate(-easeInQuart(hinweisAnimation));
-  translate(-30,-400);
+  translate(-30,-420);
   scale(0.7);
   image(hinweis,0,0,224,573);
   pop();
@@ -574,7 +574,7 @@ function generateNewSandwich()
   if(firstSandwichWasGenerated == false)
   {
     firstSandwichWasGenerated = true;
-    hinweisAnimation = 0.5;
+    hinweisAnimation = 0.7;
   }
 }
 
