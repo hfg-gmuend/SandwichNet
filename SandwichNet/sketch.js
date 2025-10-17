@@ -382,13 +382,13 @@ function draw()
   pop();
   //##### Toaster Ende #######
 
+  
 
-
-
-  sandwichNet.update();
-  sandwichNet.changeWeightsOnClick();
   push();
   translate((w-netW)/2,(h-netH)/2);
+  sandwichNet.update();
+  sandwichNet.changeWeightsOnClick();
+  
   translatedMouseX = mouseX - ((w-netW)/2);
   translatedMouseY = mouseY - ((h-netH)/2);
   
@@ -413,30 +413,11 @@ function draw()
     anim += 0.01;
     if(anim > 1.5){anim = 0} 
   }
+  
   //sandwichNet.renderNeuronsBG();
   sandwichNet.renderNodesConnectionLines();
-  sandwichNet.renderFeedForwardAnimation(anim);
-  
-  
-  sandwichNet.renderWeights();
-  sandwichNet.renderSandwichIngredients(ingredientsList);
-  sandwichNet.renderTasteOMeter();
-  sandwichNet.renderNeurons();
-  
-  
-  if(level == 3)
-  {
-    if(aktivateButton == true)
-    {
-    sandwichNet.updateError();
-    sandwichNet.renderError();
-    }
-  }
-
-  sandwichNet.renderSigmoidGraph();
   pop();
-  
-  //##### Hinweis ###########
+//##### Hinweis ###########
   push();
   translate(w/2-80,h-60);
   // fill(255,0,0)
@@ -463,6 +444,30 @@ function draw()
     sandwichNet.forward(sandwich[sandwich.length-1].taste);
   }
   //##### Sandwiches Ende #######
+  push();
+  translate((w-netW)/2,(h-netH)/2);
+  sandwichNet.renderFeedForwardAnimation(anim);
+  
+  
+  sandwichNet.renderWeights();
+  sandwichNet.renderSandwichIngredients(ingredientsList);
+  sandwichNet.renderTasteOMeter();
+  sandwichNet.renderNeurons();
+  
+  
+  if(level == 3)
+  {
+    if(aktivateButton == true)
+    {
+    sandwichNet.updateError();
+    sandwichNet.renderError();
+    }
+  }
+
+  sandwichNet.renderSigmoidGraph();
+  pop();
+  
+
   
   if(level == 3)
   {
