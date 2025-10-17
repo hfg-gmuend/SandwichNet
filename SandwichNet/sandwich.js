@@ -3,15 +3,16 @@ class Sandwich
   constructor(inputNeuronsSize, ingredientsList)
   {
     this.position = createVector(width/2, height-130);
-    this.velocity = createVector(random(-5,5),-random(10,15));
+    this.velocity = createVector(random(-5,5),-random(15,25));
     this.gravity = createVector(0,0.4);
-    this.groundPosition = random(30,80);
+    this.groundPosition = random(0,200);
     this.taste = [];
     this.alpha = 0;
     this.dezimalPositon = 0;
     this.ingrediensText = "";
     this.ingredientsList = ingredientsList;
     this.alphaRotaionSpeed = random(-0.2,0.2);
+    this.hasLandedOnPortal = false;
     for(let i = 0; i < inputNeuronsSize; i++)
     {
       let rnd = int(random(0,2));
@@ -26,7 +27,7 @@ class Sandwich
       this.dezimalPositon += this.taste[i] * Math.pow(2,i);
     }
     this.ingrediensText +="Sandwich";
-    this.sandwich_image_number = int(random(0,2));
+    this.sandwich_image_number = int(random(0,4));
   }
   renderIngrediens()
   {
@@ -68,7 +69,11 @@ class Sandwich
     push();
     translate(this.position.x, this.position.y);
     rotate(this.alpha);
-    scale(0.5);
+    let s = 0;
+    if(this.velocity.y > 0){
+      s = (this.groundPosition/260)*0.4;
+    }
+    scale(0.5+s);
     translate(-75,-75);
     image(sandwich_image[this.sandwich_image_number],0,0);  
     pop();
@@ -76,10 +81,14 @@ class Sandwich
   pysics()
   {
     
-    if(this.position.y >= height-this.groundPosition)
+    if(this.position.y >= height-this.groundPosition && this.velocity.y > 0)
     {
       this.velocity.set(0,0);
       this.alphaRotaionSpeed = 0;
+      if(this.position.x < w/2 + 75 && this.position.x > w/2 - 75 && this.position.y < h-100 + 20 && this.position.y > h-100 - 20 )
+      {
+        this.hasLandedOnPortal = true;
+      }
     }
     else
     {

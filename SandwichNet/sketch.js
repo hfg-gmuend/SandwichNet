@@ -132,6 +132,8 @@ let ingredientsArrow;
 let tasteOMeter_anzeige;
 let tasteOMeter_3;
 let tasteOMeter_2;
+let portal;
+let toaster;
 let ingredientsList = ["Käse","Eierschalen","Matsch","Hühnchen","Erdnusbutter","Marmelade","Dünger","Grobe Mettwurst","Tonscherben","Majo","Salat",""]
 
 let ingrediensVariations = [
@@ -176,14 +178,18 @@ function preload() {
   {
     print("No level set, jump to Level 2");
   }
-  sandwich_image[0] = loadImage('./img/sandwich-01.png');
-  sandwich_image[1] = loadImage('./img/sandwich-02.png');
+  sandwich_image[0] = loadImage('./img/digital-lab/sandwich-01.png');
+  sandwich_image[1] = loadImage('./img/digital-lab/sandwich-02.png');
+  sandwich_image[2] = loadImage('./img/digital-lab/sandwich-03.png');
+  sandwich_image[3] = loadImage('./img/digital-lab/sandwich-04.png');
   //tasteOMeter_anzeige = loadImage('./img/tasteOmeter_anzeige.png');
   tasteOMeter_anzeige = loadImage('./img/tastometer_03_anzeige.png');
   //tasteOMeter = loadImage('./img/tasteOmeter.png');
   tasteOMeter_3 = loadImage('./img/tastometer_03_meter.png');
   tasteOMeter_2 = loadImage('./img/tastometer_02_meter.png');
   ingredientsArrow = loadImage('./img/ingrediensArrow.png');
+  portal = loadImage('./img/portal.png');
+  toaster = loadImage('./img/toaster.png');
 }
 
 function setup() 
@@ -276,7 +282,10 @@ let playAnimBackward = false;
 let netLayerOneTrained = true;
 let netLayerTwoTrained = true;
 
-function draw() {
+function draw() 
+{
+
+
 
 if(level == 4)
 {
@@ -313,6 +322,48 @@ if(oldInputNodes != inputNodes || oldHiddenNodes != hiddenNodes || oldOutputNode
   {
     background(230,255,255);
   }
+
+  // ##### Portal #####
+
+fill(0);
+push();
+translate(w/2,h-100);
+if(mouseIsPressed && mouseX < w/2 + 75 && mouseX > w/2 - 75 && mouseY < h-100 + 20 && mouseY > h-100 - 20)
+{ 
+  scale(0.8);
+}
+else
+{
+  scale(1);
+}
+imageMode(CENTER);
+image(portal,0,0,150,80);
+//ellipse(0,0,150,40);
+imageMode(CORNER);
+pop();
+
+  // ##### Portal Ende #
+  push();
+  translate(w-150,h-170);
+  image(toaster,0,0,140,140);
+  pop();
+
+if(sandwich.length > 0)
+  {
+    for (let i = 0; i < sandwich.length; i++) 
+    {
+      sandwich[i].render();
+      sandwich[i].pysics();
+      if(sandwich[i].hasLandedOnPortal == true)
+      {
+
+      }
+    }
+    sandwich[sandwich.length-1].renderIngrediens();
+    sandwichNet.forward(sandwich[sandwich.length-1].taste);
+  }
+
+
   sandwichNet.update();
   sandwichNet.changeWeightsOnClick();
   push();
@@ -367,24 +418,7 @@ if(oldInputNodes != inputNodes || oldHiddenNodes != hiddenNodes || oldOutputNode
 
 
 
-  // ##### Portal #####
 
-  fill(0);
-  push();
-  translate(w/2,h-100);
-  if(mouseIsPressed && mouseX < w/2 + 75 && mouseX > w/2 - 75 && mouseY < h-100 + 20 && mouseY > h-100 - 20)
-  { 
-    scale(0.8);
-  }
-  else
-  {
-    scale(1);
-  }
-  
-  ellipse(0,0,150,40);
-  pop();
-
-  // ##### Portal Ende #
 
   if(level == 3)
   {
@@ -516,16 +550,7 @@ if(oldInputNodes != inputNodes || oldHiddenNodes != hiddenNodes || oldOutputNode
     
   }// Ende Level 4
 
-  if(sandwich.length > 0)
-  {
-    for (let i = 0; i < sandwich.length; i++) 
-    {
-      sandwich[i].render();
-      sandwich[i].pysics();
-    }
-    sandwich[sandwich.length-1].renderIngrediens();
-    sandwichNet.forward(sandwich[sandwich.length-1].taste);
-  }
+  
 }//Ende draw
 
 function mouseClicked() 
