@@ -158,6 +158,10 @@
         qs.setSize(x, y);
         return this;
       };
+      this.addButton  = function(title, callback) {
+        qs.addButton(title, callback);
+        return this;
+      };
   
       // Extend Quicksettings
       // so it can magically create a GUI for parameters passed by name

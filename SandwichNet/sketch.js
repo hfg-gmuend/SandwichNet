@@ -229,13 +229,16 @@ function setup()
   {
     var gui = createGui('Neural Network Config');
     gui.addGlobals('inputNodes', 'hiddenNodes', 'outputNodes', 'learningRate');
+    gui.addButton("Start one training step", startTraining);
+
     //gui.toggleCollapsed();
   }
   if(level == 4)
   { 
-    var ConfigGUI = createGui('Neural Network Config');
+    var ConfigGUI = createGui('Network and Training Config');
     ConfigGUI.addGlobals('hiddenNodes', 'learningRate', 'trainingSteps');
-    ConfigGUI.setSize(250,185);
+    ConfigGUI.setSize(250,230);
+    ConfigGUI.addButton("Start training sequenze!", startTraining);
     var DatasetGUI = createGui('Dataset');
     DatasetGUI.addGlobals
     (
@@ -259,6 +262,7 @@ function setup()
     DatasetGUI.setPosition(10,250);
     DatasetGUI.setSize(250,400);
     //gui.toggleCollapsed();
+    aktivateButton = true;
   }
   if(level == 1)
   {
@@ -295,7 +299,7 @@ function setup()
 let translatedMouseX;
 let translatedMouseY;
 let offsetTrainButton;
-let aktivateButton = true;
+let aktivateButton = false;
 let trainButtonClicked = false;
 let anim = 0;
 let animSpeed = 0.01;
@@ -305,39 +309,37 @@ let netLayerTwoTrained = true;
 
 function draw() 
 {
-
-
-
-if(level == 4)
-{
-  updateDataset();
-}
-
-if(oldInputNodes != inputNodes || oldHiddenNodes != hiddenNodes || oldOutputNodes != outputNodes)
-{
-  if(inputNodes > 4)
+  if(level == 4)
   {
-    netH = (inputNodes * 160);
-    h = inputNodes*200;
-    resizeCanvas(w, h);
+    updateDataset();
   }
-  else
+
+  if(oldInputNodes != inputNodes || oldHiddenNodes != hiddenNodes || oldOutputNodes != outputNodes)
   {
-    netH = windowHeight * 0.8;
-    h = windowHeight;
-    resizeCanvas(w, h);
-  }
-  sandwichNet = new SimpleNeuralNet(inputNodes, hiddenNodes, outputNodes, netW, netH);
-  oldInputNodes = inputNodes;
-  oldHiddenNodes = hiddenNodes;
-  oldOutputNodes = outputNodes;
-  
-} // Ende if Nodes changed
+    if(inputNodes > 4)
+    {
+      netH = (inputNodes * 160);
+      h = inputNodes*200;
+      resizeCanvas(w, h);
+    }
+    else
+    {
+      netH = windowHeight * 0.8;
+      h = windowHeight;
+      resizeCanvas(w, h);
+    }
+    sandwichNet = new SimpleNeuralNet(inputNodes, hiddenNodes, outputNodes, netW, netH);
+    oldInputNodes = inputNodes;
+    oldHiddenNodes = hiddenNodes;
+    oldOutputNodes = outputNodes;
+    
+  } // Ende if Nodes changed
 
   offsetTrainButton = netW/2;
+
   if(bg == 1)
   {
-    background(255);
+    background(250);
   }
   else
   {
@@ -372,7 +374,6 @@ if(oldInputNodes != inputNodes || oldHiddenNodes != hiddenNodes || oldOutputNode
   image(toaster,0,0,140,140);
   scale(1.1);
   image(aidLogo,130,50,190,48);
-
   pop();
   //##### Toaster Ende #######
 
@@ -398,10 +399,6 @@ if(sandwich.length > 0)
     {
       sandwich[i].render();
       sandwich[i].pysics();
-      if(sandwich[i].hasLandedOnPortal == true)
-      {
-
-      }
     }
     sandwich[sandwich.length-1].renderIngrediens();
     sandwichNet.forward(sandwich[sandwich.length-1].taste);
@@ -459,11 +456,6 @@ if(sandwich.length > 0)
   sandwichNet.renderSigmoidGraph();
   pop();
   
-
-
-
-
-
   if(level == 3)
   {
     let counter = 0;
@@ -480,34 +472,34 @@ if(sandwich.length > 0)
       aktivateButton = true
     }
     
-    if(aktivateButton == true)
-    {
-      //TrainButton activated
-      rectMode(CENTER);
-      fill(255);
-      stroke(0);
-      strokeWeight(5);
-      rect(w/2+offsetTrainButton,h-100,150,40);
-      fill(0);
-      noStroke(0);
-      textSize(22);
-      text("Train!",w/2+offsetTrainButton,h-95);
-    }
-    else
-    {
-      //TrainButton deactiveted
-      rectMode(CENTER);
-      fill(255);
-      stroke(200);
-      strokeWeight(5);
-      rect(w/2+offsetTrainButton,h-100,150,40);
-      fill(200);
-      noStroke(0);
-      textSize(22);
-      text("Train!",w/2+offsetTrainButton,h-95);
-      textSize(16);
-      text("Change Output Value to Train ...",w/2+offsetTrainButton+40,h-50);
-    }
+    // if(aktivateButton == true)
+    // {
+    //   //TrainButton activated
+    //   rectMode(CENTER);
+    //   fill(255);
+    //   stroke(0);
+    //   strokeWeight(5);
+    //   rect(w/2+offsetTrainButton,h-100,150,40);
+    //   fill(0);
+    //   noStroke(0);
+    //   textSize(22);
+    //   text("Train!",w/2+offsetTrainButton,h-95);
+    // }
+    // else
+    // {
+    //   //TrainButton deactiveted
+    //   rectMode(CENTER);
+    //   fill(255);
+    //   stroke(200);
+    //   strokeWeight(5);
+    //   rect(w/2+offsetTrainButton,h-100,150,40);
+    //   fill(200);
+    //   noStroke(0);
+    //   textSize(22);
+    //   text("Train!",w/2+offsetTrainButton,h-95);
+    //   textSize(16);
+    //   text("Change Output Value to Train ...",w/2+offsetTrainButton+40,h-50);
+    // }
     
     fill(0);
 
@@ -529,32 +521,33 @@ if(sandwich.length > 0)
   {
     // Render Train Button
     rectMode(CENTER);
-    if(aktivateButton == true)
-    {
-      //TrainButton activated
-      fill(255);
-      stroke(0);
-      strokeWeight(5);
-      rect(w/2+offsetTrainButton,h-100,150,40);
-      fill(0);
-      noStroke(0);
-      textSize(22);
-      text("Train!",w/2+offsetTrainButton,h-95);
-    }
-    else
-    {
-      //TrainButton deactiveted
-      fill(255);
-      stroke(200);
-      strokeWeight(5);
-      rect(w/2+offsetTrainButton,h-100,150,40);
-      fill(200);
-      noStroke(0);
-      textSize(22);
-      text("Train!",w/2+offsetTrainButton,h-95);
-      textSize(16);
-      text("Training started please wait ...", w/2+offsetTrainButton+40,h-50);
-    }
+    textAlign(CENTER);
+    // if(aktivateButton == true)
+    // {
+    //   //TrainButton activated
+    //   fill(255);
+    //   stroke(0);
+    //   strokeWeight(5);
+    //   rect(w/2+offsetTrainButton,h-100,150,40);
+    //   fill(0);
+    //   noStroke(0);
+    //   textSize(22);
+    //   text("Train!",w/2+offsetTrainButton,h-95);
+    // }
+    // else
+    // {
+    //   //TrainButton deactiveted
+    //   fill(255);
+    //   stroke(200);
+    //   strokeWeight(5);
+    //   rect(w/2+offsetTrainButton,h-100,150,40);
+    //   fill(200);
+    //   noStroke(0);
+    //   textSize(22);
+    //   text("Train!",w/2+offsetTrainButton,h-95);
+    //   textSize(16);
+    //   text("Training started please wait ...", w/2+offsetTrainButton+40,h-50);
+    // }
     fill(0);
     rectMode(CORNER);
     
