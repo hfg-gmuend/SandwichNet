@@ -227,9 +227,13 @@ function setup()
   frameRate(60);
   if(level == 3)
   {
+    learningRate = 5;
+    learningRateMin = 0;
+    learningRateMax = 20;
+    learningRateStep = .1;
     var gui = createGui('Neural Network Config');
     gui.addGlobals('inputNodes', 'hiddenNodes', 'outputNodes', 'learningRate');
-    gui.addButton("Start one training step", startTraining);
+    gui.addButton("Start ONE training step", startTraining);
 
     //gui.toggleCollapsed();
   }
@@ -237,8 +241,9 @@ function setup()
   { 
     var ConfigGUI = createGui('Network and Training Config');
     ConfigGUI.addGlobals('hiddenNodes', 'learningRate', 'trainingSteps');
+    ConfigGUI.setPosition(290,10);
     ConfigGUI.setSize(250,230);
-    ConfigGUI.addButton("Start training sequenze!", startTraining);
+    ConfigGUI.addButton("Start a training sequenze!", startTraining);
     var DatasetGUI = createGui('Dataset');
     DatasetGUI.addGlobals
     (
@@ -259,7 +264,7 @@ function setup()
       'PineappleLettuceChicken', 
       'CheesePineappleLettuceChicken'
     );
-    DatasetGUI.setPosition(10,250);
+    DatasetGUI.setPosition(10,10);
     DatasetGUI.setSize(250,400);
     //gui.toggleCollapsed();
     aktivateButton = true;
@@ -350,7 +355,7 @@ function draw()
   fill(0);
   push();
   translate(w/2,h-100);
-  if(mouseIsPressed && mouseX < w/2 + 75 && mouseX > w/2 - 75 && mouseY < h-100 + 20 && mouseY > h-100 - 20)
+  if(mouseIsPressed && mouseX < w/2 + 75 && mouseX > w/2 - 75 && mouseY < h-100 + 35 && mouseY > h-100 - 35)
   { 
     scale(0.8);
   }
@@ -518,39 +523,7 @@ if(sandwich.length > 0)
   }// Level 3 Ende
 
   if(level == 4)
-  {
-    // Render Train Button
-    rectMode(CENTER);
-    textAlign(CENTER);
-    // if(aktivateButton == true)
-    // {
-    //   //TrainButton activated
-    //   fill(255);
-    //   stroke(0);
-    //   strokeWeight(5);
-    //   rect(w/2+offsetTrainButton,h-100,150,40);
-    //   fill(0);
-    //   noStroke(0);
-    //   textSize(22);
-    //   text("Train!",w/2+offsetTrainButton,h-95);
-    // }
-    // else
-    // {
-    //   //TrainButton deactiveted
-    //   fill(255);
-    //   stroke(200);
-    //   strokeWeight(5);
-    //   rect(w/2+offsetTrainButton,h-100,150,40);
-    //   fill(200);
-    //   noStroke(0);
-    //   textSize(22);
-    //   text("Train!",w/2+offsetTrainButton,h-95);
-    //   textSize(16);
-    //   text("Training started please wait ...", w/2+offsetTrainButton+40,h-50);
-    // }
-    fill(0);
-    rectMode(CORNER);
-    
+  {    
     if(trainButtonClicked == true)  
     { 
       if(trainingStepsCounter < trainingSteps)
@@ -574,17 +547,8 @@ if(sandwich.length > 0)
         aktivateButton = true;
         trainingStepsCounter = 0;
         trainButtonClicked = false;
-        
       }
     }
-    // Render soll poriton from dataset on tastometer
-    // if(sandwich.length > 0)
-    // {
-    //   // set TasteOMeter to the right Value from Dataset
-    //   sandwichNet.tasteOMeter[0].manualOutputValue = true;
-    //   sandwichNet.tasteOMeter[0].value = dataset[sandwich[sandwich.length-1].dezimalPositon];
-    // }
-    
   }// Ende Level 4
 
   
@@ -596,7 +560,7 @@ function mouseClicked()
   {
     startTraining();
   }
-  if(mouseX < w/2 + 75 && mouseX > w/2 - 75 && mouseY < h-100 + 20 && mouseY > h-100 - 20 )
+  if(mouseX < w/2 + 75 && mouseX > w/2 - 75 && mouseY < h-100 + 35 && mouseY > h-100 - 35 )
   {
     generateNewSandwich();
   }
