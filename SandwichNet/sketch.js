@@ -535,7 +535,13 @@ function mouseClicked()
   {
     generateNewSandwich();
   }
-  
+}
+
+function touchStarted() {
+  if(touch.x < w/2 + 75 && touch.x > w/2 - 75 && touch.y < h-100 + 35 && touch.y > h-100 - 35 )
+  {
+    generateNewSandwich();
+  }
 }
 
 function startTraining()
