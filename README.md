@@ -33,11 +33,7 @@ index.html?level=3
 Level 4:
 index.html?level=4
 
-To train SandwichNet manually, all weights can be adjusted individually. If a weight is changed using its plus and minus buttons, all results of the dependent sum and sigmoid functions are recalculated and updated instantly. The change is immediately visible at all connecting nodes, including the change on the output node.
-
-To check whether the chosen configuration of weights performs well, various sandwich combinations must be tested.
-
-If a sandwich combination does not achieve the desired result, the weights must be adjusted further.
+To train SandwichNet manually, all weights can be adjusted individually. If a weight is changed using its plus and minus buttons, all results of the dependent sum and sigmoid functions are recalculated and updated instantly. The change is immediately visible at all connecting nodes, including the change on the output node. To check whether the chosen configuration of weights performs well, various sandwich combinations must be tested. If a sandwich combination does not achieve the desired result, the weights must be adjusted further.
 
 In the third level of the SandwichNet, the weights are no longer manually adjusted but optimized in a semi-automated procedure using the backpropagation mechanism. This involves calculating the output with randomly initialized weights and then calculating the deviation between the resulting and expected values. This error is then distributed to the individual weights, and thus, the neural network is further optimized in each cycle. We call the process semi-automatic because the students must support the backpropagation process in each cycle by determining the error. 
 
